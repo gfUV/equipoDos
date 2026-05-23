@@ -93,7 +93,6 @@ class HomeFragment : Fragment() {
             if (!player.isPlaying) player.start()
         }
     }
-
     private fun pauseBackgroundMusic() {
         backgroundMusic?.let { player ->
             if (player.isPlaying) player.pause()
