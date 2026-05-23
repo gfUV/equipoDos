@@ -70,8 +70,6 @@ class HomeFragment : Fragment() {
         super.onDestroyView()
     }
 
-    // --- LÓGICA DE COMPONENTES DEL JUEGO (Compañera) ---
-
     private fun configureAnimations() {
         val blinkAnimation = AnimationUtils.loadAnimation(requireContext(), R.anim.blink_button)
         binding.btnPressMe.startAnimation(blinkAnimation)
