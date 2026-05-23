@@ -2,4 +2,15 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="orange">#FFFF5A00</color>
+    <color name="orange_dark">#FFE64A00</color>
+    <color name="home_dark">#FF1E1E1E</color>
+    <color name="game_black">#FF000000</color>
+    <color name="game_black_transparent">#99000000</color>
+    <color name="game_orange">#FFFF8C00</color>
+    <color name="game_orange_dark">#FFE66A00</color>
+    <color name="game_orange_light">#FFFFC266</color>
+    <color name="wood_dark">#FF4A250F</color>
+    <color name="wood_medium">#FF7B421D</color>
+    <color name="wood_light">#FFC27632</color>
 </resources>
