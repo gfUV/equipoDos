@@ -23,7 +23,7 @@ class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
-    // Lógica del juego traída del repo de tu compañera
+
     private val homeViewModel: HomeViewModel by viewModels()
     private var backgroundMusic: MediaPlayer? = null
 
@@ -45,7 +45,7 @@ class HomeFragment : Fragment() {
         // 1. Inicializar listeners de la Toolbar (Tu código)
         setupToolbarListeners()
 
-        // 2. Inicializar lógica del juego (Código de tu compañera)
+        // 2. Inicializar lógica del juego
         configureAnimations()
         observeViewModel()
         homeViewModel.startCountdownPreview()
@@ -114,7 +114,6 @@ class HomeFragment : Fragment() {
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(playStoreUrl))
             startActivity(intent)
         }
-
         // MP1-24 Criterio 3: Interruptor del audio de fondo (ON / OFF) con cambio visual y de MediaPlayer
         binding.customToolbar.btnAudio.setOnClickListener {
             isAudioOn = !isAudioOn
