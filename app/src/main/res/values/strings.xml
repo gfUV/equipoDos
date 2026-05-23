@@ -1,6 +1,8 @@
 <resources>
-    <string name="app_name">Pico Botella</string>
+    <string name="app_name">SpinBot</string>
     <string name="splash_title">pico botella</string>
     <string name="home_title">Home Principal</string>
     <string name="home_message">HU 1.0 completada: el splash ya navega correctamente al home.</string>
+    <string name="press_me">Presióname</string>
+    <string name="bottle_content_description">Imagen central de una botella para el juego pico botella</string>
 </resources>
