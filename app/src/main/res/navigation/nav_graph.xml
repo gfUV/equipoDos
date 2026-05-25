@@ -21,5 +21,24 @@
         android:id="@+id/homeFragment"
         android:name="com.wt2dadmuvy.spinbot.view.home.HomeFragment"
         android:label="Home Principal"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home">
+
+        <!-- Acción para navegar al Fragment de Retos (HU 6 - Natalia) -->
+        <action
+            android:id="@+id/action_homeFragment_to_challengesFragment"
+            app:destination="@id/challengesFragment" />
+    </fragment>
+
+    <!--
+        Pantalla de Retos - HU 6.0 (Natalia)
+        Se navega desde el botón "Retos" de la toolbar del home.
+        Al presionar la flecha atrás dentro de este fragment, el NavController
+        regresa automáticamente al homeFragment (navigateUp).
+    -->
+    <fragment
+        android:id="@+id/challengesFragment"
+        android:name="com.wt2dadmuvy.spinbot.view.challenges.ChallengesFragment"
+        android:label="Retos"
+        tools:layout="@layout/fragment_challenges" />
+
 </navigation>

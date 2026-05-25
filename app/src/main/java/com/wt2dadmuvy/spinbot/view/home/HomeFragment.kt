@@ -12,10 +12,13 @@ import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.wt2dadmuvy.spinbot.R
 import com.wt2dadmuvy.spinbot.databinding.FragmentHomeBinding
 import com.wt2dadmuvy.spinbot.viewmodel.HomeViewModel
+import com.wt2dadmuvy.spinbot.viewmodel.SharedAudioViewModel
 
 class HomeFragment : Fragment() {
 
@@ -25,6 +28,11 @@ class HomeFragment : Fragment() {
 
 
     private val homeViewModel: HomeViewModel by viewModels()
+
+    // ViewModel compartido con ChallengesFragment (HU 6) e InstructionsFragment (HU 5).
+    // Permite que esos fragments sepan si el audio estaba ON y soliciten pausarlo/reanudarlo.
+    private val sharedAudioViewModel: SharedAudioViewModel by activityViewModels()
+
     private var backgroundMusic: MediaPlayer? = null
 
     // MP1-24 Criterio 3: El estado del audio inicia por defecto en ENCENDIDO (true)
@@ -42,13 +50,16 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // 1. Inicializar listeners de la Toolbar (Tu código)
+        // 1. Inicializar listeners de la Toolbar
         setupToolbarListeners()
 
         // 2. Inicializar lógica del juego
         configureAnimations()
         observeViewModel()
         homeViewModel.startCountdownPreview()
+
+        // 3. Observar solicitudes de pausa de audio desde HU 5 (Instrucciones) y HU 6 (Retos)
+        observeSharedAudio()
     }
 
     override fun onResume() {
@@ -105,7 +116,33 @@ class HomeFragment : Fragment() {
         backgroundMusic = null
     }
 
-    // --- LÓGICA DE LA CUSTOM TOOLBAR (Tu código) ---
+    // --- AUDIO COMPARTIDO (HU 5 y HU 6) ---
+
+    /**
+     * Observa las solicitudes de pausa de audio que hacen ChallengesFragment (HU 6)
+     * e InstructionsFragment (HU 5) al entrar y salir de sus pantallas.
+     *
+     * - pause = true  → pausar música (el fragment destino acaba de abrirse)
+     * - pause = false → reanudar música (el fragment destino acaba de cerrarse)
+     *
+     * Solo reanuda si el usuario no apagó el audio manualmente (isAudioOn == true)
+     * y si el MediaPlayer ya fue inicializado (backgroundMusic != null).
+     * La segunda condición evita iniciar música prematuramente antes de onResume().
+     */
+    private fun observeSharedAudio() {
+        sharedAudioViewModel.pauseRequested.observe(viewLifecycleOwner) { shouldPause ->
+            if (shouldPause) {
+                pauseBackgroundMusic()
+            } else {
+                // Reanudar solo si el usuario no había apagado el audio y ya existe el player
+                if (isAudioOn && backgroundMusic != null) {
+                    startBackgroundMusic()
+                }
+            }
+        }
+    }
+
+    // --- LÓGICA DE LA CUSTOM TOOLBAR ---
 
     private fun setupToolbarListeners() {
         // MP1-23 Criterio 2: Ícono estrella manda a simulación de tienda (Nequi)
@@ -117,6 +154,8 @@ class HomeFragment : Fragment() {
         // MP1-24 Criterio 3: Interruptor del audio de fondo (ON / OFF) con cambio visual y de MediaPlayer
         binding.customToolbar.btnAudio.setOnClickListener {
             isAudioOn = !isAudioOn
+            // Sincronizar el estado con SharedAudioViewModel para que HU 5 y HU 6 lo lean
+            sharedAudioViewModel.setAudioOn(isAudioOn)
             if (isAudioOn) {
                 // Cambia al ícono de audio encendido
                 binding.customToolbar.btnAudio.setImageResource(R.drawable.volume_up)
@@ -143,9 +182,9 @@ class HomeFragment : Fragment() {
             Toast.makeText(requireContext(), "Navegación a Instrucciones (Pendiente por el equipo)", Toast.LENGTH_SHORT).show()
         }
 
-        // MP1-26 Criterio 5: Ícono retos navega a HU 6.0
+        // MP1-26 Criterio 5: Ícono retos navega a HU 6.0 (ChallengesFragment - Natalia)
         binding.customToolbar.btnRetos.setOnClickListener {
-            Toast.makeText(requireContext(), "Navegación a Retos (Pendiente por el equipo)", Toast.LENGTH_SHORT).show()
+            findNavController().navigate(R.id.action_homeFragment_to_challengesFragment)
         }
 
         // MP1-27 Criterio 6: Ícono compartir app lanza BottomSheet nativo con datos de Nequi
