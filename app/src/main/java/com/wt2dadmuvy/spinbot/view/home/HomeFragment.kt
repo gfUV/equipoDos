@@ -13,6 +13,7 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.wt2dadmuvy.spinbot.R
 import com.wt2dadmuvy.spinbot.databinding.FragmentHomeBinding
 import com.wt2dadmuvy.spinbot.viewmodel.HomeViewModel
@@ -139,7 +140,7 @@ class HomeFragment : Fragment() {
 
         // MP1-25 Criterio 4: Ícono instrucciones navega a HU 5.0
         binding.customToolbar.btnInstrucciones.setOnClickListener {
-            Toast.makeText(requireContext(), "Navegación a Instrucciones (Pendiente por el equipo)", Toast.LENGTH_SHORT).show()
+            findNavController().navigate(R.id.action_homeFragment_to_instructionsFragment)
         }
 
         // MP1-26 Criterio 5: Ícono retos navega a HU 6.0
