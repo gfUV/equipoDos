@@ -158,18 +158,13 @@ class ChallengesFragment : Fragment() {
     }
 
     /**
-     * Lanza el cuadro de diálogo para ELIMINAR un reto - HU 9 (German).
-     *
-     * TODO: Cuando German cree su DeleteChallengeDialogFragment, reemplazar el Toast.
-     * Se debe pasar el reto seleccionado para que el dialog muestre su descripción.
-     * Ejemplo:
-     *   DeleteChallengeDialogFragment.newInstance(challenge).show(childFragmentManager, "DeleteDialog")
+     * Lanza el cuadro de diálogo para ELIMINAR un reto - HU 9.0 (German).
      *
      * @param challenge El reto que el jugador quiere eliminar.
      */
     private fun showDeleteDialog(challenge: Challenge) {
-        // Placeholder temporal hasta que German entregue HU 9
-        Toast.makeText(requireContext(), "Dialog Eliminar: ${challenge.description} - HU 9 (German)", Toast.LENGTH_SHORT).show()
+        DeleteChallengeDialogFragment.newInstance(challenge)
+            .show(childFragmentManager, "DeleteChallengeDialog")
     }
 
     // -------------------------------------------------------------------------

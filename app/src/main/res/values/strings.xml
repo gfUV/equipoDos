@@ -14,6 +14,11 @@
     <string name="cancel">Cancelar</string>
     <string name="save">Guardar</string>
 
+    <!-- Eliminar Reto -->
+    <string name="delete_title">¿Deseas eliminar el siguiente reto?:</string>
+    <string name="no">NO</string>
+    <string name="si">SI</string>
+
     <!-- Instrucciones de Juego -->
     <string name="instructions_title">Reglas del Juego</string>
     <string name="how_to_play_title">¿Cómo se juega?</string>
