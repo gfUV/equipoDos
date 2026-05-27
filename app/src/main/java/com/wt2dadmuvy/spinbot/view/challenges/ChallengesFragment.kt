@@ -142,15 +142,9 @@ class ChallengesFragment : Fragment() {
 
     /**
      * Lanza el cuadro de diálogo para AGREGAR un reto - HU 7 (Jonatan).
-     *
-     * TODO: Cuando Jonatan cree su AddChallengeDialogFragment, reemplazar el Toast
-     * por la llamada real al dialog, pasando el ViewModel como argumento.
-     * Ejemplo:
-     *   AddChallengeDialogFragment().show(childFragmentManager, "AddChallengeDialog")
      */
     private fun showAddDialog() {
-        // Placeholder temporal hasta que Jonatan entregue HU 7
-        Toast.makeText(requireContext(), "Dialog Agregar Reto - HU 7 (Jonatan)", Toast.LENGTH_SHORT).show()
+        AddChallengeDialogFragment().show(childFragmentManager, "AddChallengeDialog")
     }
 
     /**
