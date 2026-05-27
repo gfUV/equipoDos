@@ -4,6 +4,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="orange">#FFFF5A00</color>
     <color name="orange_dark">#FFE64A00</color>
+    <color name="gray">#D3D3D3</color>
     <color name="home_dark">#FF1E1E1E</color>
     <color name="game_black">#FF000000</color>
     <color name="game_black_transparent">#99000000</color>
