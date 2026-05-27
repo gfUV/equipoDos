@@ -11,13 +11,13 @@
         android:id="@+id/tvTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/add_challenge"
+        android:text="@string/edit_challenge"
         android:textAlignment="center"
         android:textColor="@color/black"
         android:textSize="20sp"
         android:textStyle="bold" />
 
-    <!-- Criterio 3: EditText con hint y línea naranja -->
+    <!-- Criterio 3: EditText con línea naranja y texto del reto -->
     <EditText
         android:id="@+id/etChallenge"
         android:layout_width="match_parent"
@@ -35,7 +35,7 @@
         android:gravity="center"
         android:orientation="horizontal">
 
-        <!-- Criterio 4: Botón Cancelar naranja (ahora con fondo según imagen) -->
+        <!-- Criterio 4: Botón Cancelar naranja -->
         <Button
             android:id="@+id/btnCancel"
             android:layout_width="wrap_content"
@@ -46,14 +46,13 @@
             android:textAllCaps="false"
             android:textColor="@color/white" />
 
-        <!-- Criterio 5: Botón Guardar (habilitado = naranja, deshabilitado = gris) -->
+        <!-- Criterio 5: Botón Guardar naranja (habilitado) -->
         <Button
             android:id="@+id/btnSave"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
-            android:backgroundTint="@color/gray"
-            android:enabled="false"
+            android:backgroundTint="@color/orange"
             android:text="@string/save"
             android:textAllCaps="false"
             android:textColor="@color/white" />

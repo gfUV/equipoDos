@@ -7,6 +7,13 @@
     <string name="bottle_content_description">Imagen central de una botella para el juego pico botella</string>
     <string name="back">Atrás</string>
 
+    <!-- Retos -->
+    <string name="add_challenge">Agregar reto</string>
+    <string name="edit_challenge">Editar reto</string>
+    <string name="hint_write_challenge">Escriba el reto</string>
+    <string name="cancel">Cancelar</string>
+    <string name="save">Guardar</string>
+
     <!-- Instrucciones de Juego -->
     <string name="instructions_title">Reglas del Juego</string>
     <string name="how_to_play_title">¿Cómo se juega?</string>

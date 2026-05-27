@@ -150,16 +150,11 @@ class ChallengesFragment : Fragment() {
     /**
      * Lanza el cuadro de diálogo para EDITAR un reto - HU 8 (Alexandra).
      *
-     * TODO: Cuando Alexandra cree su EditChallengeDialogFragment, reemplazar el Toast.
-     * Se debe pasar el reto seleccionado para que el dialog muestre su descripción actual.
-     * Ejemplo:
-     *   EditChallengeDialogFragment.newInstance(challenge).show(childFragmentManager, "EditDialog")
-     *
      * @param challenge El reto que el jugador quiere editar.
      */
     private fun showEditDialog(challenge: Challenge) {
-        // Placeholder temporal hasta que Alexandra entregue HU 8
-        Toast.makeText(requireContext(), "Dialog Editar: ${challenge.description} - HU 8 (Alexandra)", Toast.LENGTH_SHORT).show()
+        EditChallengeDialogFragment.newInstance(challenge)
+            .show(childFragmentManager, "EditChallengeDialog")
     }
 
     /**

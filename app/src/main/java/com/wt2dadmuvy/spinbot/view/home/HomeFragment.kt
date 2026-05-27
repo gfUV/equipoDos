@@ -166,8 +166,13 @@ class HomeFragment : Fragment() {
     // --- LÓGICA DE LA CUSTOM TOOLBAR ---
 
     private fun setupToolbarListeners() {
-        // ... (otros botones)
-        
+        // HU 4.0 Criterio 1: El ícono de la estrella (btnCalificar) abre la Play Store de Nequi
+        binding.customToolbar.btnCalificar.setOnClickListener {
+            val url = "https://play.google.com/store/apps/details?id=com.nequi.MobileApp&hl=es_419&gl=es"
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+            startActivity(intent)
+        }
+
         binding.customToolbar.btnAudio.setOnClickListener {
             val newState = !isAudioOn
             // Al actualizar el ViewModel, el observador en observeSharedAudio() 
