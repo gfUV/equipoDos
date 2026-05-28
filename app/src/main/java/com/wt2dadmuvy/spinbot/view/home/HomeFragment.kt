@@ -75,7 +75,7 @@ class HomeFragment : Fragment() {
     private fun configureAnimations() {
         val pulseAnimation1 = AnimationUtils.loadAnimation(requireContext(), R.anim.pulse_ripple)
         val pulseAnimation2 = AnimationUtils.loadAnimation(requireContext(), R.anim.pulse_ripple)
-        pulseAnimation2.startOffset = 1000 // Desfase para que las ondas no sean simultáneas
+        pulseAnimation2.startOffset = 1000
         binding.viewPulse1.startAnimation(pulseAnimation1)
         binding.viewPulse2.startAnimation(pulseAnimation2)
     }
@@ -95,11 +95,9 @@ class HomeFragment : Fragment() {
         }
     }
 
-    // --- Lógica del giro - HU 11 ---
-
     private fun setupSpinButton() {
         binding.btnPressMe.setOnClickListener {
-            // Audio cambia aquí directamente — sin esperar el observer de LiveData
+            // Audio directo en el click para sincronía inmediata con la animación
             if (isAudioOn) {
                 pauseBackgroundMusic()
                 playSpinSound()
@@ -119,7 +117,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun onEsperandoReto() {
-        // TODO HU 12: reemplazar el Toast por ShowRandomChallengeDialog().show(childFragmentManager, "RandomChallengeDialog")
+        // TODO HU 12: reemplazar por ShowRandomChallengeDialog().show(childFragmentManager, "RandomChallengeDialog")
         // El diálogo debe llamar homeViewModel.reiniciarJuego() al cerrar
         Toast.makeText(requireContext(), "Pendiente HU 12", Toast.LENGTH_SHORT).show()
         homeViewModel.reiniciarJuego()
@@ -141,8 +139,6 @@ class HomeFragment : Fragment() {
         }
     }
 
-    // --- Música de fondo ---
-
     private fun startBackgroundMusic() {
         if (backgroundMusic == null) {
             backgroundMusic = MediaPlayer.create(requireContext(), R.raw.game_background).apply {
@@ -162,9 +158,7 @@ class HomeFragment : Fragment() {
         backgroundMusic = null
     }
 
-    // --- Sonido del giro - HU 11 ---
-
-    // Se pre-carga en onResume para que esté listo al instante cuando el usuario presione el botón
+    // Pre-cargado en onResume para que esté listo al instante cuando el usuario presione el botón
     private fun initSpinSound() {
         if (spinSound == null) {
             spinSound = MediaPlayer.create(requireContext(), R.raw.spin_sound)?.apply {
@@ -187,8 +181,6 @@ class HomeFragment : Fragment() {
         spinSound = null
     }
 
-    // --- Audio compartido con HU 5 y HU 6 ---
-
     private fun observeSharedAudio() {
         sharedAudioViewModel.isAudioOn.observe(viewLifecycleOwner) { isOn ->
             isAudioOn = isOn
@@ -209,8 +201,6 @@ class HomeFragment : Fragment() {
             ContextCompat.getColor(requireContext(), R.color.orange)
         )
     }
-
-    // --- Toolbar ---
 
     private fun setupToolbarListeners() {
         binding.customToolbar.btnCalificar.setOnClickListener {
