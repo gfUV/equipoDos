@@ -5,13 +5,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.wt2dadmuvy.spinbot.databinding.FragmentInstructionsBinding
+import com.wt2dadmuvy.spinbot.viewmodel.SharedAudioViewModel
 
 class InstructionsFragment : Fragment() {
 
     private var _binding: FragmentInstructionsBinding? = null
     private val binding get() = _binding!!
+
+    // HU 5 Criterio 1 y 3: ViewModel compartido para pausar y restaurar el audio de fondo
+    private val sharedAudioViewModel: SharedAudioViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -24,8 +29,12 @@ class InstructionsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Criterio 3: Botón atrás vuelve al Home
+        // HU 5 Criterio 1: pausar el audio de fondo al entrar a esta pantalla
+        sharedAudioViewModel.requestPause(true)
+
+        // HU 5 Criterio 3: botón atrás vuelve al Home y restaura el audio si estaba encendido
         binding.btnBack.setOnClickListener {
+            sharedAudioViewModel.requestPause(false)
             findNavController().popBackStack()
         }
 
