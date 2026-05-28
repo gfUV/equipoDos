@@ -99,6 +99,11 @@ class HomeFragment : Fragment() {
 
     private fun setupSpinButton() {
         binding.btnPressMe.setOnClickListener {
+            // Audio cambia aquí directamente — sin esperar el observer de LiveData
+            if (isAudioOn) {
+                pauseBackgroundMusic()
+                playSpinSound()
+            }
             homeViewModel.iniciarGiro()
         }
     }
@@ -106,10 +111,6 @@ class HomeFragment : Fragment() {
     private fun onBottellaGirando() {
         binding.btnPressMe.clearAnimation()
         binding.btnPressMe.visibility = View.INVISIBLE
-        if (isAudioOn) {
-            pauseBackgroundMusic()
-            playSpinSound()
-        }
         animarBotella(homeViewModel.deltaGiro.value ?: 0f)
     }
 
@@ -167,7 +168,7 @@ class HomeFragment : Fragment() {
     private fun initSpinSound() {
         if (spinSound == null) {
             spinSound = MediaPlayer.create(requireContext(), R.raw.spin_sound)?.apply {
-                isLooping = true
+                isLooping = false
                 setVolume(0.8f, 0.8f)
             }
         }

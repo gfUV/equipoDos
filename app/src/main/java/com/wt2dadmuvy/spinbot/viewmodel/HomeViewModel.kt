@@ -28,7 +28,7 @@ class HomeViewModel : ViewModel() {
 
     companion object {
         // Debe coincidir con la duración de la animación en HomeFragment
-        const val DURACION_GIRO_MS = 4000L
+        const val DURACION_GIRO_MS = 6000L
     }
 
     // Countdown en loop 3→0 mientras el juego está inactivo (HU 2)
