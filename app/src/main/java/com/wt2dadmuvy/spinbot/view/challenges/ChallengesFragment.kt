@@ -142,45 +142,29 @@ class ChallengesFragment : Fragment() {
 
     /**
      * Lanza el cuadro de diálogo para AGREGAR un reto - HU 7 (Jonatan).
-     *
-     * TODO: Cuando Jonatan cree su AddChallengeDialogFragment, reemplazar el Toast
-     * por la llamada real al dialog, pasando el ViewModel como argumento.
-     * Ejemplo:
-     *   AddChallengeDialogFragment().show(childFragmentManager, "AddChallengeDialog")
      */
     private fun showAddDialog() {
-        // Placeholder temporal hasta que Jonatan entregue HU 7
-        Toast.makeText(requireContext(), "Dialog Agregar Reto - HU 7 (Jonatan)", Toast.LENGTH_SHORT).show()
+        AddChallengeDialogFragment().show(childFragmentManager, "AddChallengeDialog")
     }
 
     /**
      * Lanza el cuadro de diálogo para EDITAR un reto - HU 8 (Alexandra).
      *
-     * TODO: Cuando Alexandra cree su EditChallengeDialogFragment, reemplazar el Toast.
-     * Se debe pasar el reto seleccionado para que el dialog muestre su descripción actual.
-     * Ejemplo:
-     *   EditChallengeDialogFragment.newInstance(challenge).show(childFragmentManager, "EditDialog")
-     *
      * @param challenge El reto que el jugador quiere editar.
      */
     private fun showEditDialog(challenge: Challenge) {
-        // Placeholder temporal hasta que Alexandra entregue HU 8
-        Toast.makeText(requireContext(), "Dialog Editar: ${challenge.description} - HU 8 (Alexandra)", Toast.LENGTH_SHORT).show()
+        EditChallengeDialogFragment.newInstance(challenge)
+            .show(childFragmentManager, "EditChallengeDialog")
     }
 
     /**
-     * Lanza el cuadro de diálogo para ELIMINAR un reto - HU 9 (German).
-     *
-     * TODO: Cuando German cree su DeleteChallengeDialogFragment, reemplazar el Toast.
-     * Se debe pasar el reto seleccionado para que el dialog muestre su descripción.
-     * Ejemplo:
-     *   DeleteChallengeDialogFragment.newInstance(challenge).show(childFragmentManager, "DeleteDialog")
+     * Lanza el cuadro de diálogo para ELIMINAR un reto - HU 9.0 (German).
      *
      * @param challenge El reto que el jugador quiere eliminar.
      */
     private fun showDeleteDialog(challenge: Challenge) {
-        // Placeholder temporal hasta que German entregue HU 9
-        Toast.makeText(requireContext(), "Dialog Eliminar: ${challenge.description} - HU 9 (German)", Toast.LENGTH_SHORT).show()
+        DeleteChallengeDialogFragment.newInstance(challenge)
+            .show(childFragmentManager, "DeleteChallengeDialog")
     }
 
     // -------------------------------------------------------------------------

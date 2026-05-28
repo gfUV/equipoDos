@@ -63,7 +63,7 @@ class HomeFragment : Fragment() {
         observeViewModel()
         homeViewModel.startCountdownPreview()
 
-        // 3. Observar solicitudes de pausa de audio desde HU 5 (Instrucciones) y HU 6 (Retos)
+        // 3. Observar el estado del audio (ON/OFF) y las solicitudes de pausa (HU 5/6)
         observeSharedAudio()
 
         // 4. HU 11: conectar botón "Presióname" con la lógica de giro
@@ -98,8 +98,14 @@ class HomeFragment : Fragment() {
     // -------------------------------------------------------------------------
 
     private fun configureAnimations() {
-        val blinkAnimation = AnimationUtils.loadAnimation(requireContext(), R.anim.blink_button)
-        binding.btnPressMe.startAnimation(blinkAnimation)
+        val pulseAnimation1 = AnimationUtils.loadAnimation(requireContext(), R.anim.pulse_ripple)
+        val pulseAnimation2 = AnimationUtils.loadAnimation(requireContext(), R.anim.pulse_ripple)
+
+        // Desfasamos las ondas para un efecto más natural
+        pulseAnimation2.startOffset = 1000
+
+        binding.viewPulse1.startAnimation(pulseAnimation1)
+        binding.viewPulse2.startAnimation(pulseAnimation2)
     }
 
     private fun observeViewModel() {
@@ -249,7 +255,6 @@ class HomeFragment : Fragment() {
             if (!player.isPlaying) player.start()
         }
     }
-
     private fun pauseBackgroundMusic() {
         backgroundMusic?.let { player ->
             if (player.isPlaying) player.pause()
@@ -330,6 +335,13 @@ class HomeFragment : Fragment() {
      * La segunda condición evita iniciar música prematuramente antes de onResume().
      */
     private fun observeSharedAudio() {
+        // Observa si el usuario apagó o encendió el audio globalmente
+        sharedAudioViewModel.isAudioOn.observe(viewLifecycleOwner) { isOn ->
+            isAudioOn = isOn
+            updateAudioIconUI(isOn)
+        }
+
+        // Observa solicitudes de pausa temporal (al entrar a otras pantallas)
         sharedAudioViewModel.pauseRequested.observe(viewLifecycleOwner) { shouldPause ->
             if (shouldPause) {
                 pauseBackgroundMusic()
@@ -341,41 +353,48 @@ class HomeFragment : Fragment() {
         }
     }
 
+    private fun updateAudioIconUI(isOn: Boolean) {
+        val iconRes = if (isOn) R.drawable.volume_up else R.drawable.volume_off
+        binding.customToolbar.btnAudio.setImageResource(iconRes)
+
+        // Mantiene el color naranja oficial en el nuevo ícono
+        val colorNaranja = ContextCompat.getColor(requireContext(), R.color.orange)
+        binding.customToolbar.btnAudio.imageTintList = ColorStateList.valueOf(colorNaranja)
+    }
+
     // -------------------------------------------------------------------------
     // LÓGICA DE LA CUSTOM TOOLBAR
     // -------------------------------------------------------------------------
 
     private fun setupToolbarListeners() {
-        // MP1-23 Criterio 2: Ícono estrella manda a simulación de tienda (Nequi)
+        // HU 4.0 Criterio 1: El ícono de la estrella (btnCalificar) abre la Play Store de Nequi
         binding.customToolbar.btnCalificar.setOnClickListener {
-            val playStoreUrl = "https://play.google.com/store/apps/details?id=com.nequi.MobileApp&hl=es_419&gl=es"
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(playStoreUrl))
+            val url = "https://play.google.com/store/apps/details?id=com.nequi.MobileApp&hl=es_419&gl=es"
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
             startActivity(intent)
         }
 
-        // MP1-24 Criterio 3: Interruptor del audio de fondo (ON / OFF) con cambio visual y de MediaPlayer
+        // MP1-24 Criterio 3: Interruptor del audio de fondo (ON / OFF)
         binding.customToolbar.btnAudio.setOnClickListener {
-            isAudioOn = !isAudioOn
-            // Sincronizar el estado con SharedAudioViewModel para que HU 5 y HU 6 lo lean
-            sharedAudioViewModel.setAudioOn(isAudioOn)
-            if (isAudioOn) {
-                binding.customToolbar.btnAudio.setImageResource(R.drawable.volume_up)
+            val newState = !isAudioOn
+            // Al actualizar el ViewModel, el observador en observeSharedAudio()
+            // se activará y llamará a updateAudioIconUI automáticamente.
+            sharedAudioViewModel.setAudioOn(newState)
+
+            if (newState) {
                 Toast.makeText(requireContext(), "Audio: Encendido", Toast.LENGTH_SHORT).show()
                 startBackgroundMusic()
             } else {
-                binding.customToolbar.btnAudio.setImageResource(R.drawable.volume_off)
                 Toast.makeText(requireContext(), "Audio: Pausado", Toast.LENGTH_SHORT).show()
                 pauseBackgroundMusic()
                 // Si la botella estaba girando, también detener su sonido
                 stopSpinSound()
             }
-            val colorNaranja = ContextCompat.getColor(requireContext(), R.color.orange)
-            binding.customToolbar.btnAudio.imageTintList = ColorStateList.valueOf(colorNaranja)
         }
 
         // MP1-25 Criterio 4: Ícono instrucciones navega a HU 5.0
         binding.customToolbar.btnInstrucciones.setOnClickListener {
-            Toast.makeText(requireContext(), "Navegación a Instrucciones (Pendiente por el equipo)", Toast.LENGTH_SHORT).show()
+            findNavController().navigate(R.id.action_homeFragment_to_instructionsFragment)
         }
 
         // MP1-26 Criterio 5: Ícono retos navega a HU 6.0 (ChallengesFragment - Natalia)
