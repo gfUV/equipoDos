@@ -18,11 +18,6 @@ import com.wt2dadmuvy.spinbot.model.Challenge
  *
  * ¿Por qué es una interfaz y no una clase?
  * Porque Room la implementa automáticamente. No necesitamos escribir el SQL manualmente.
- *
- * NOTA IMPORTANTE sobre suspend:
- * Las funciones de escritura (insert, update, delete) NO usan la palabra "suspend" aquí.
- * El motivo es una incompatibilidad entre KSP 2.3.2 y Room 2.6.1 que usamos en este proyecto.
- * En su lugar, el hilo de fondo (IO) se maneja en ChallengeRepository con withContext(Dispatchers.IO).
  */
 @Dao
 interface ChallengeDao {
@@ -47,7 +42,7 @@ interface ChallengeDao {
      * @Insert le dice a Room que genere automáticamente el SQL: INSERT INTO Challenge VALUES(...)
      */
     @Insert
-    fun insertChallenge(challenge: Challenge)
+    suspend fun insertChallenge(challenge: Challenge)
 
     /**
      * Actualiza un reto existente en la base de datos.
@@ -57,7 +52,7 @@ interface ChallengeDao {
      * @Update genera: UPDATE Challenge SET name=..., description=... WHERE id=...
      */
     @Update
-    fun updateChallenge(challenge: Challenge)
+    suspend fun updateChallenge(challenge: Challenge)
 
     /**
      * Elimina un reto de la base de datos.
@@ -67,5 +62,5 @@ interface ChallengeDao {
      * @Delete genera: DELETE FROM Challenge WHERE id=...
      */
     @Delete
-    fun deleteChallenge(challenge: Challenge)
+    suspend fun deleteChallenge(challenge: Challenge)
 }
