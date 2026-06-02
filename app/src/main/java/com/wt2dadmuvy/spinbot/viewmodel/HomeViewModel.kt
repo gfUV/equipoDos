@@ -52,23 +52,6 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         const val DURACION_GIRO_MS = 6000L
     }
 
-    // Countdown en loop 3→0 mientras el juego está inactivo (HU 2)
-    fun startCountdownPreview() {
-        if (countdownJob?.isActive == true) return
-
-        countdownJob = viewModelScope.launch {
-            while (true) {
-                for (number in 3 downTo 0) {
-                    _countdown.value = number
-                    delay(1000)
-                }
-                delay(700)
-                _countdown.value = 3
-                delay(700)
-            }
-        }
-    }
-
     // Inicia el giro: calcula rotación aleatoria y avanza el estado hasta ESPERANDO_RETO
     fun iniciarGiro() {
         if (_estadoJuego.value == EstadoJuego.GIRANDO) return
@@ -119,12 +102,11 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         _randomChallengeDialogData.value = null
     }
 
-    // Vuelve al estado inicial y reactiva el countdown de preview
+    // Vuelve al estado inicial
     fun reiniciarJuego() {
         spinJob?.cancel()
         randomChallengeJob?.cancel()
         _estadoJuego.value = EstadoJuego.INACTIVO
-        startCountdownPreview()
     }
 
     override fun onCleared() {

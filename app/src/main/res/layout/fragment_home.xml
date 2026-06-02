@@ -59,6 +59,7 @@
         android:textColor="@color/game_orange"
         android:textSize="30sp"
         android:textStyle="bold"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/imgBottle"
         app:layout_constraintEnd_toEndOf="@id/imgBottle"
         app:layout_constraintStart_toStartOf="@id/imgBottle"

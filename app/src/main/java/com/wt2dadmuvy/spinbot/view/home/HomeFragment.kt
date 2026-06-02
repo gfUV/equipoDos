@@ -19,7 +19,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.wt2dadmuvy.spinbot.R
 import com.wt2dadmuvy.spinbot.databinding.FragmentHomeBinding
-import com.wt2dadmuvy.spinbot.view.dialog.RandomChallengeDialogFragment
+import com.wt2dadmuvy.spinbot.view.challenges.RandomChallengeDialogFragment
 import com.wt2dadmuvy.spinbot.viewmodel.HomeViewModel
 import com.wt2dadmuvy.spinbot.viewmodel.SharedAudioViewModel
 
@@ -50,7 +50,6 @@ class HomeFragment : Fragment() {
         configureAnimations()
         observeViewModel()
         setupRandomChallengeDialogObserver()
-        homeViewModel.startCountdownPreview()
         observeSharedAudio()
         setupSpinButton()
     }
@@ -88,6 +87,8 @@ class HomeFragment : Fragment() {
         }
 
         homeViewModel.estadoJuego.observe(viewLifecycleOwner) { estado ->
+            binding.tvCountdown.visibility = if (estado == HomeViewModel.EstadoJuego.CUENTA_REGRESIVA) View.VISIBLE else View.GONE
+
             when (estado) {
                 HomeViewModel.EstadoJuego.GIRANDO          -> onBottellaGirando()
                 HomeViewModel.EstadoJuego.CUENTA_REGRESIVA -> onCuentaRegresiva()
@@ -109,8 +110,10 @@ class HomeFragment : Fragment() {
     }
 
     private fun onBottellaGirando() {
-        binding.btnPressMe.clearAnimation()
-        binding.btnPressMe.visibility = View.INVISIBLE
+        binding.containerPressMe.visibility = View.INVISIBLE
+        binding.tvPressMeLegend.visibility = View.INVISIBLE
+        binding.viewPulse1.clearAnimation()
+        binding.viewPulse2.clearAnimation()
         animarBotella(homeViewModel.deltaGiro.value ?: 0f)
     }
 
@@ -146,10 +149,11 @@ class HomeFragment : Fragment() {
 
     private fun onJuegoInactivo() {
         // HU 12 - Criterio 5:
-        // Después de cerrar el diálogo del reto, el Home vuelve a quedar listo
+        // Después de cerrar el diálogo del resto, el Home vuelve a quedar listo
         // para iniciar una nueva partida: botón visible, animación activa y audio
         // de fondo restaurado si el usuario lo tenía encendido.
-        binding.btnPressMe.visibility = View.VISIBLE
+        binding.containerPressMe.visibility = View.VISIBLE
+        binding.tvPressMeLegend.visibility = View.VISIBLE
         configureAnimations()
         if (isAudioOn) startBackgroundMusic()
     }
