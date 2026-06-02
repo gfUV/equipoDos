@@ -4,6 +4,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -50,6 +51,15 @@ class RandomChallengeDialogFragment : DialogFragment() {
 
     override fun onStart() {
         super.onStart()
+
+        // HU 12 - Criterio 6:
+        // El diálogo NO debe cerrarse al tocar por fuera ni con el botón Atrás.
+        // Solo debe desaparecer cuando el jugador presione el botón "Cerrar".
+        dialog?.setCanceledOnTouchOutside(false)
+        dialog?.setOnKeyListener { _, keyCode, _ ->
+            keyCode == KeyEvent.KEYCODE_BACK
+        }
+
         dialog?.window?.setLayout(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT
@@ -66,6 +76,9 @@ class RandomChallengeDialogFragment : DialogFragment() {
         loadPokemonImage(pokemonImageUrl)
 
         binding.btnCloseRandomChallenge.setOnClickListener {
+            // HU 12 - Criterio 5:
+            // Al cerrar el diálogo se notifica al Home para dejar el juego listo
+            // para una nueva partida, sin alterar el flujo anterior del proyecto.
             parentFragmentManager.setFragmentResult(REQUEST_KEY_CLOSED, bundleOf())
             dismiss()
         }

@@ -145,9 +145,13 @@ class HomeFragment : Fragment() {
     }
 
     private fun onJuegoInactivo() {
+        // HU 12 - Criterio 5:
+        // Después de cerrar el diálogo del reto, el Home vuelve a quedar listo
+        // para iniciar una nueva partida: botón visible, animación activa y audio
+        // de fondo restaurado si el usuario lo tenía encendido.
         binding.btnPressMe.visibility = View.VISIBLE
         configureAnimations()
-        if (isAudioOn && backgroundMusic != null) startBackgroundMusic()
+        if (isAudioOn) startBackgroundMusic()
     }
 
     // Rota la botella desde su posición actual con desaceleración progresiva
