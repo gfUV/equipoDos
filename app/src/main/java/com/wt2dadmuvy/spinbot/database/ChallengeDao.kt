@@ -39,7 +39,8 @@ interface ChallengeDao {
      * Inserta un nuevo reto en la base de datos.
      * Lo usa HU 7 (Jonatan) cuando el jugador guarda un reto nuevo desde el diálogo.
      *
-     * @Insert le dice a Room que genere automáticamente el SQL: INSERT INTO Challenge VALUES(...)
+     * @Insert le dice a Room que genere automáticamente el SQL:
+     * INSERT INTO Challenge VALUES(...)
      */
     @Insert
     suspend fun insertChallenge(challenge: Challenge)
@@ -49,7 +50,8 @@ interface ChallengeDao {
      * Lo usa HU 8 (Alexandra) cuando el jugador edita un reto desde el diálogo.
      * Room identifica cuál fila actualizar usando el campo "id" del objeto Challenge.
      *
-     * @Update genera: UPDATE Challenge SET name=..., description=... WHERE id=...
+     * @Update genera:
+     * UPDATE Challenge SET name=..., description=... WHERE id=...
      */
     @Update
     suspend fun updateChallenge(challenge: Challenge)
@@ -59,8 +61,19 @@ interface ChallengeDao {
      * Lo usa HU 9 (German) cuando el jugador confirma eliminar un reto desde el diálogo.
      * Room identifica cuál fila eliminar usando el campo "id" del objeto Challenge.
      *
-     * @Delete genera: DELETE FROM Challenge WHERE id=...
+     * @Delete genera:
+     * DELETE FROM Challenge WHERE id=...
      */
     @Delete
     suspend fun deleteChallenge(challenge: Challenge)
+
+    /**
+     * Obtiene un reto aleatorio desde la base de datos local.
+     *
+     * HU 12 - Criterio 3:
+     * El reto mostrado en el diálogo debe venir desde SQLite/Room
+     * y seleccionarse de forma aleatoria.
+     */
+    @Query("SELECT * FROM Challenge ORDER BY RANDOM() LIMIT 1")
+    suspend fun getRandomChallenge(): Challenge?
 }

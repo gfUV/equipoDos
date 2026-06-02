@@ -60,4 +60,13 @@ class ChallengeRepository(private val challengeDao: ChallengeDao) {
     suspend fun delete(challenge: Challenge) {
         challengeDao.deleteChallenge(challenge)
     }
+
+
+    /**
+     * Retorna un reto aleatorio desde Room para mostrarlo en HU 12.
+     */
+    suspend fun getRandomChallenge(): Challenge? {
+        return challengeDao.getRandomChallenge()
+    }
+
 }

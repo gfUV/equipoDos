@@ -1,5 +1,6 @@
 package com.wt2dadmuvy.spinbot.view.home
 
+import android.animation.ObjectAnimator
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.media.MediaPlayer
@@ -9,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
+import android.view.animation.DecelerateInterpolator
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -17,25 +19,20 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.wt2dadmuvy.spinbot.R
 import com.wt2dadmuvy.spinbot.databinding.FragmentHomeBinding
+import com.wt2dadmuvy.spinbot.view.dialog.RandomChallengeDialogFragment
 import com.wt2dadmuvy.spinbot.viewmodel.HomeViewModel
 import com.wt2dadmuvy.spinbot.viewmodel.SharedAudioViewModel
 
 class HomeFragment : Fragment() {
 
-    // Configuración de View Binding para acceder de forma segura a las vistas
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
-
     private val homeViewModel: HomeViewModel by viewModels()
-
-    // ViewModel compartido con ChallengesFragment (HU 6) e InstructionsFragment (HU 5).
-    // Permite que esos fragments sepan si el audio estaba ON y soliciten pausarlo/reanudarlo.
     private val sharedAudioViewModel: SharedAudioViewModel by activityViewModels()
 
     private var backgroundMusic: MediaPlayer? = null
-
-    // MP1-24 Criterio 3: El estado del audio inicia por defecto en ENCENDIDO (true)
+    private var spinSound: MediaPlayer? = null
     private var isAudioOn = true
 
     override fun onCreateView(
@@ -49,45 +46,38 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        // 1. Inicializar listeners de la Toolbar
         setupToolbarListeners()
-
-        // 2. Inicializar lógica del juego
         configureAnimations()
         observeViewModel()
+        setupRandomChallengeDialogObserver()
         homeViewModel.startCountdownPreview()
-
-        // 3. Observar el estado del audio (ON/OFF) y las solicitudes de pausa (HU 5/6)
         observeSharedAudio()
+        setupSpinButton()
     }
 
     override fun onResume() {
         super.onResume()
-        // Solo reproduce música al volver si el usuario no la ha silenciado manualmente
-        if (isAudioOn) {
-            startBackgroundMusic()
-        }
+        if (isAudioOn) startBackgroundMusic()
+        initSpinSound()
     }
 
     override fun onPause() {
+        stopSpinSound()
         pauseBackgroundMusic()
         super.onPause()
     }
 
     override fun onDestroyView() {
+        releaseSpinSound()
         releaseBackgroundMusic()
-        _binding = null // Evitamos fugas de memoria (Memory Leaks)
+        _binding = null
         super.onDestroyView()
     }
 
     private fun configureAnimations() {
         val pulseAnimation1 = AnimationUtils.loadAnimation(requireContext(), R.anim.pulse_ripple)
         val pulseAnimation2 = AnimationUtils.loadAnimation(requireContext(), R.anim.pulse_ripple)
-
-        // Desfasamos las ondas para un efecto más natural
         pulseAnimation2.startOffset = 1000
-
         binding.viewPulse1.startAnimation(pulseAnimation1)
         binding.viewPulse2.startAnimation(pulseAnimation2)
     }
@@ -95,6 +85,82 @@ class HomeFragment : Fragment() {
     private fun observeViewModel() {
         homeViewModel.countdown.observe(viewLifecycleOwner) { number ->
             binding.tvCountdown.text = number.toString()
+        }
+
+        homeViewModel.estadoJuego.observe(viewLifecycleOwner) { estado ->
+            when (estado) {
+                HomeViewModel.EstadoJuego.GIRANDO          -> onBottellaGirando()
+                HomeViewModel.EstadoJuego.CUENTA_REGRESIVA -> onCuentaRegresiva()
+                HomeViewModel.EstadoJuego.ESPERANDO_RETO   -> onEsperandoReto()
+                HomeViewModel.EstadoJuego.INACTIVO         -> onJuegoInactivo()
+            }
+        }
+    }
+
+    private fun setupSpinButton() {
+        binding.btnPressMe.setOnClickListener {
+            // Audio directo en el click para sincronía inmediata con la animación
+            if (isAudioOn) {
+                pauseBackgroundMusic()
+                playSpinSound()
+            }
+            homeViewModel.iniciarGiro()
+        }
+    }
+
+    private fun onBottellaGirando() {
+        binding.btnPressMe.clearAnimation()
+        binding.btnPressMe.visibility = View.INVISIBLE
+        animarBotella(homeViewModel.deltaGiro.value ?: 0f)
+    }
+
+    private fun onCuentaRegresiva() {
+        stopSpinSound()
+    }
+
+    private fun onEsperandoReto() {
+        homeViewModel.cargarRetoAleatorioParaDialogo()
+    }
+
+    private fun setupRandomChallengeDialogObserver() {
+        childFragmentManager.setFragmentResultListener(
+            RandomChallengeDialogFragment.REQUEST_KEY_CLOSED,
+            viewLifecycleOwner
+        ) { _, _ ->
+            homeViewModel.reiniciarJuego()
+        }
+
+        homeViewModel.randomChallengeDialogData.observe(viewLifecycleOwner) { dialogData ->
+            dialogData ?: return@observe
+
+            if (childFragmentManager.findFragmentByTag(RANDOM_CHALLENGE_DIALOG_TAG) == null) {
+                RandomChallengeDialogFragment.newInstance(
+                    challengeText = dialogData.challengeDescription,
+                    pokemonImageUrl = dialogData.pokemonImageUrl
+                ).show(childFragmentManager, RANDOM_CHALLENGE_DIALOG_TAG)
+            }
+
+            homeViewModel.limpiarDatosDialogoReto()
+        }
+    }
+
+    private fun onJuegoInactivo() {
+        // HU 12 - Criterio 5:
+        // Después de cerrar el diálogo del reto, el Home vuelve a quedar listo
+        // para iniciar una nueva partida: botón visible, animación activa y audio
+        // de fondo restaurado si el usuario lo tenía encendido.
+        binding.btnPressMe.visibility = View.VISIBLE
+        configureAnimations()
+        if (isAudioOn) startBackgroundMusic()
+    }
+
+    // Rota la botella desde su posición actual con desaceleración progresiva
+    private fun animarBotella(delta: Float) {
+        val rotacionActual = binding.imgBottle.rotation
+        ObjectAnimator.ofFloat(binding.imgBottle, "rotation", rotacionActual, rotacionActual + delta).apply {
+            duration = HomeViewModel.DURACION_GIRO_MS
+            interpolator = DecelerateInterpolator(2f)
+            start()
         }
     }
 
@@ -105,15 +171,11 @@ class HomeFragment : Fragment() {
                 setVolume(0.45f, 0.45f)
             }
         }
-
-        backgroundMusic?.let { player ->
-            if (!player.isPlaying) player.start()
-        }
+        backgroundMusic?.let { if (!it.isPlaying) it.start() }
     }
+
     private fun pauseBackgroundMusic() {
-        backgroundMusic?.let { player ->
-            if (player.isPlaying) player.pause()
-        }
+        backgroundMusic?.let { if (it.isPlaying) it.pause() }
     }
 
     private fun releaseBackgroundMusic() {
@@ -121,92 +183,89 @@ class HomeFragment : Fragment() {
         backgroundMusic = null
     }
 
-    // --- AUDIO COMPARTIDO (HU 5 y HU 6) ---
+    // Pre-cargado en onResume para que esté listo al instante cuando el usuario presione el botón
+    private fun initSpinSound() {
+        if (spinSound == null) {
+            spinSound = MediaPlayer.create(requireContext(), R.raw.spin_sound)?.apply {
+                isLooping = false
+                setVolume(0.8f, 0.8f)
+            }
+        }
+    }
 
-    /**
-     * Observa las solicitudes de pausa de audio que hacen ChallengesFragment (HU 6)
-     * e InstructionsFragment (HU 5) al entrar y salir de sus pantallas.
-     *
-     * - pause = true  → pausar música (el fragment destino acaba de abrirse)
-     * - pause = false → reanudar música (el fragment destino acaba de cerrarse)
-     *
-     * Solo reanuda si el usuario no apagó el audio manualmente (isAudioOn == true)
-     * y si el MediaPlayer ya fue inicializado (backgroundMusic != null).
-     * La segunda condición evita iniciar música prematuramente antes de onResume().
-     */
+    private fun playSpinSound() {
+        spinSound?.apply { seekTo(0); start() }
+    }
+
+    private fun stopSpinSound() {
+        spinSound?.apply { if (isPlaying) { pause(); seekTo(0) } }
+    }
+
+    private fun releaseSpinSound() {
+        spinSound?.release()
+        spinSound = null
+    }
+
     private fun observeSharedAudio() {
-        // Observa si el usuario apagó o encendió el audio globalmente
         sharedAudioViewModel.isAudioOn.observe(viewLifecycleOwner) { isOn ->
             isAudioOn = isOn
             updateAudioIconUI(isOn)
         }
 
-        // Observa solicitudes de pausa temporal (al entrar a otras pantallas)
         sharedAudioViewModel.pauseRequested.observe(viewLifecycleOwner) { shouldPause ->
-            if (shouldPause) {
-                pauseBackgroundMusic()
-            } else {
-                // Reanudar solo si el usuario no había apagado el audio y ya existe el player
-                if (isAudioOn && backgroundMusic != null) {
-                    startBackgroundMusic()
-                }
-            }
+            if (shouldPause) pauseBackgroundMusic()
+            else if (isAudioOn && backgroundMusic != null) startBackgroundMusic()
         }
     }
 
     private fun updateAudioIconUI(isOn: Boolean) {
-        val iconRes = if (isOn) R.drawable.volume_up else R.drawable.volume_off
-        binding.customToolbar.btnAudio.setImageResource(iconRes)
-
-        // Mantiene el color naranja oficial en el nuevo ícono
-        val colorNaranja = ContextCompat.getColor(requireContext(), R.color.orange)
-        binding.customToolbar.btnAudio.imageTintList = ColorStateList.valueOf(colorNaranja)
+        binding.customToolbar.btnAudio.setImageResource(
+            if (isOn) R.drawable.volume_up else R.drawable.volume_off
+        )
+        binding.customToolbar.btnAudio.imageTintList = ColorStateList.valueOf(
+            ContextCompat.getColor(requireContext(), R.color.orange)
+        )
     }
 
-    // --- LÓGICA DE LA CUSTOM TOOLBAR ---
-
     private fun setupToolbarListeners() {
-        // HU 4.0 Criterio 1: El ícono de la estrella (btnCalificar) abre la Play Store de Nequi
         binding.customToolbar.btnCalificar.setOnClickListener {
             val url = "https://play.google.com/store/apps/details?id=com.nequi.MobileApp&hl=es_419&gl=es"
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-            startActivity(intent)
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
         }
 
         binding.customToolbar.btnAudio.setOnClickListener {
             val newState = !isAudioOn
-            // Al actualizar el ViewModel, el observador en observeSharedAudio() 
-            // se activará y llamará a updateAudioIconUI automáticamente.
             sharedAudioViewModel.setAudioOn(newState)
-            
             if (newState) {
                 Toast.makeText(requireContext(), "Audio: Encendido", Toast.LENGTH_SHORT).show()
                 startBackgroundMusic()
             } else {
                 Toast.makeText(requireContext(), "Audio: Pausado", Toast.LENGTH_SHORT).show()
                 pauseBackgroundMusic()
+                stopSpinSound()
             }
         }
 
-        // MP1-25 Criterio 4: Ícono instrucciones navega a HU 5.0
         binding.customToolbar.btnInstrucciones.setOnClickListener {
             findNavController().navigate(R.id.action_homeFragment_to_instructionsFragment)
         }
 
-        // MP1-26 Criterio 5: Ícono retos navega a HU 6.0 (ChallengesFragment - Natalia)
         binding.customToolbar.btnRetos.setOnClickListener {
             findNavController().navigate(R.id.action_homeFragment_to_challengesFragment)
         }
 
-        // MP1-27 Criterio 6: Ícono compartir app lanza BottomSheet nativo con datos de Nequi
         binding.customToolbar.btnCompartir.setOnClickListener {
-            val textoACompartir = "App pico botella\nSolo los valientes lo juegan !!\nhttps://play.google.com/store/apps/details?id=com.nequi.MobileApp&hl=es_419&gl=es"
-
+            val texto = "App pico botella\nSolo los valientes lo juegan !!\nhttps://play.google.com/store/apps/details?id=com.nequi.MobileApp&hl=es_419&gl=es"
             val shareIntent = Intent(Intent.ACTION_SEND).apply {
                 type = "text/plain"
-                putExtra(Intent.EXTRA_TEXT, textoACompartir)
+                putExtra(Intent.EXTRA_TEXT, texto)
             }
             startActivity(Intent.createChooser(shareIntent, "Compartir aplicación vía:"))
         }
+    }
+
+
+    companion object {
+        private const val RANDOM_CHALLENGE_DIALOG_TAG = "RandomChallengeDialog"
     }
 }
