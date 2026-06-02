@@ -1,17 +1,29 @@
 package com.wt2dadmuvy.spinbot.viewmodel
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.wt2dadmuvy.spinbot.database.AppDatabase
+import com.wt2dadmuvy.spinbot.repository.ChallengeRepository
+import com.wt2dadmuvy.spinbot.repository.PokemonRepository
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class HomeViewModel : ViewModel() {
+class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
     // Estados del juego - HU 11
     enum class EstadoJuego { INACTIVO, GIRANDO, CUENTA_REGRESIVA, ESPERANDO_RETO }
+
+    data class RandomChallengeDialogData(
+        val challengeDescription: String,
+        val pokemonImageUrl: String?
+    )
+
+    private val challengeRepository: ChallengeRepository
+    private val pokemonRepository = PokemonRepository()
 
     private val _estadoJuego = MutableLiveData(EstadoJuego.INACTIVO)
     val estadoJuego: LiveData<EstadoJuego> = _estadoJuego
@@ -23,8 +35,17 @@ class HomeViewModel : ViewModel() {
     private val _deltaGiro = MutableLiveData(0f)
     val deltaGiro: LiveData<Float> = _deltaGiro
 
+    private val _randomChallengeDialogData = MutableLiveData<RandomChallengeDialogData?>()
+    val randomChallengeDialogData: LiveData<RandomChallengeDialogData?> = _randomChallengeDialogData
+
     private var countdownJob: Job? = null
     private var spinJob: Job? = null
+    private var randomChallengeJob: Job? = null
+
+    init {
+        val dao = AppDatabase.getDatabase(application).challengeDao()
+        challengeRepository = ChallengeRepository(dao)
+    }
 
     companion object {
         // Debe coincidir con la duración de la animación en HomeFragment
@@ -74,9 +95,34 @@ class HomeViewModel : ViewModel() {
         }
     }
 
+    /**
+     * HU 12 - Criterios 2 y 3.
+     * Obtiene en segundo plano un reto aleatorio desde Room y una imagen aleatoria
+     * de Pokémon desde la API indicada por el profesor.
+     */
+    fun cargarRetoAleatorioParaDialogo() {
+        if (randomChallengeJob?.isActive == true) return
+
+        randomChallengeJob = viewModelScope.launch {
+            val challenge = challengeRepository.getRandomChallenge()
+            val pokemonImageUrl = pokemonRepository.getRandomPokemonImageUrl()
+
+            _randomChallengeDialogData.value = RandomChallengeDialogData(
+                challengeDescription = challenge?.description
+                    ?: "Agrega retos para que el juego pueda seleccionar uno aleatoriamente.",
+                pokemonImageUrl = pokemonImageUrl
+            )
+        }
+    }
+
+    fun limpiarDatosDialogoReto() {
+        _randomChallengeDialogData.value = null
+    }
+
     // Vuelve al estado inicial y reactiva el countdown de preview
     fun reiniciarJuego() {
         spinJob?.cancel()
+        randomChallengeJob?.cancel()
         _estadoJuego.value = EstadoJuego.INACTIVO
         startCountdownPreview()
     }
@@ -84,6 +130,7 @@ class HomeViewModel : ViewModel() {
     override fun onCleared() {
         countdownJob?.cancel()
         spinJob?.cancel()
+        randomChallengeJob?.cancel()
         super.onCleared()
     }
 }

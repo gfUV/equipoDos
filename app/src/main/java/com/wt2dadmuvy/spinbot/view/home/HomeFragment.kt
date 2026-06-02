@@ -19,6 +19,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.wt2dadmuvy.spinbot.R
 import com.wt2dadmuvy.spinbot.databinding.FragmentHomeBinding
+import com.wt2dadmuvy.spinbot.view.dialog.RandomChallengeDialogFragment
 import com.wt2dadmuvy.spinbot.viewmodel.HomeViewModel
 import com.wt2dadmuvy.spinbot.viewmodel.SharedAudioViewModel
 
@@ -48,6 +49,7 @@ class HomeFragment : Fragment() {
         setupToolbarListeners()
         configureAnimations()
         observeViewModel()
+        setupRandomChallengeDialogObserver()
         homeViewModel.startCountdownPreview()
         observeSharedAudio()
         setupSpinButton()
@@ -117,10 +119,29 @@ class HomeFragment : Fragment() {
     }
 
     private fun onEsperandoReto() {
-        // TODO HU 12: reemplazar por ShowRandomChallengeDialog().show(childFragmentManager, "RandomChallengeDialog")
-        // El diálogo debe llamar homeViewModel.reiniciarJuego() al cerrar
-        Toast.makeText(requireContext(), "Pendiente HU 12", Toast.LENGTH_SHORT).show()
-        homeViewModel.reiniciarJuego()
+        homeViewModel.cargarRetoAleatorioParaDialogo()
+    }
+
+    private fun setupRandomChallengeDialogObserver() {
+        childFragmentManager.setFragmentResultListener(
+            RandomChallengeDialogFragment.REQUEST_KEY_CLOSED,
+            viewLifecycleOwner
+        ) { _, _ ->
+            homeViewModel.reiniciarJuego()
+        }
+
+        homeViewModel.randomChallengeDialogData.observe(viewLifecycleOwner) { dialogData ->
+            dialogData ?: return@observe
+
+            if (childFragmentManager.findFragmentByTag(RANDOM_CHALLENGE_DIALOG_TAG) == null) {
+                RandomChallengeDialogFragment.newInstance(
+                    challengeText = dialogData.challengeDescription,
+                    pokemonImageUrl = dialogData.pokemonImageUrl
+                ).show(childFragmentManager, RANDOM_CHALLENGE_DIALOG_TAG)
+            }
+
+            homeViewModel.limpiarDatosDialogoReto()
+        }
     }
 
     private fun onJuegoInactivo() {
@@ -237,5 +258,10 @@ class HomeFragment : Fragment() {
             }
             startActivity(Intent.createChooser(shareIntent, "Compartir aplicación vía:"))
         }
+    }
+
+
+    companion object {
+        private const val RANDOM_CHALLENGE_DIALOG_TAG = "RandomChallengeDialog"
     }
 }

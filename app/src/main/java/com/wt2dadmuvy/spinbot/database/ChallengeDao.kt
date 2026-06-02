@@ -63,4 +63,16 @@ interface ChallengeDao {
      */
     @Delete
     suspend fun deleteChallenge(challenge: Challenge)
+
+
+    /**
+     * Obtiene un reto aleatorio desde la base de datos local.
+     *
+     * HU 12 - Criterio 3:
+     * El reto mostrado en el diálogo debe venir desde SQLite/Room y seleccionarse
+     * de forma aleatoria.
+     */
+    @Query("SELECT * FROM Challenge ORDER BY RANDOM() LIMIT 1")
+    suspend fun getRandomChallenge(): Challenge?
+
 }
