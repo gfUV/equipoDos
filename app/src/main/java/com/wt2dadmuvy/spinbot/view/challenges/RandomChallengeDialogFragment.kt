@@ -1,4 +1,4 @@
-package com.wt2dadmuvy.spinbot.view.dialog
+package com.wt2dadmuvy.spinbot.view.challenges
 
 import android.graphics.BitmapFactory
 import android.graphics.Color
@@ -85,6 +85,7 @@ class RandomChallengeDialogFragment : DialogFragment() {
     }
 
     private fun loadPokemonImage(imageUrl: String?) {
+        binding.imgPokemon.setImageDrawable(null)
         if (imageUrl.isNullOrBlank()) {
             binding.pbPokemon.isVisible = false
             binding.imgPokemon.setImageResource(R.drawable.ic_bottle_home)
