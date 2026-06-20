@@ -45,7 +45,7 @@ class SplashFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             delay(SPLASH_TIME_MILLISECONDS)
             if (isAdded) {
-                findNavController().navigate(R.id.action_splashFragment_to_homeFragment)
+                findNavController().navigate(R.id.action_splashFragment_to_loginFragment)
             }
         }
     }

@@ -14,4 +14,8 @@
     <color name="wood_dark">#FF4A250F</color>
     <color name="wood_medium">#FF7B421D</color>
     <color name="wood_light">#FFC27632</color>
+
+    <!-- HU 2 Miniproyecto II - Login y Registro -->
+    <color name="login_orange">#FFFF3D00</color>
+    <color name="login_error_red">#FFFF2B2B</color>
 </resources>
