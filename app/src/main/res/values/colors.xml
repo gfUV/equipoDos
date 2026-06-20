@@ -18,4 +18,7 @@
     <!-- HU 2 Miniproyecto II - Login y Registro -->
     <color name="login_orange">#FFFF3D00</color>
     <color name="login_error_red">#FFFF2B2B</color>
+
+    <color name="login_register_gray">#FF9EA1A1</color>
+    <color name="login_disabled_text">#99FFFFFF</color>
 </resources>

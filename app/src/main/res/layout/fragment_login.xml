@@ -6,8 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black"
-    android:paddingStart="24dp"
-    android:paddingEnd="24dp"
     tools:context=".view.auth.LoginFragment">
 
     <TextView
@@ -28,7 +26,9 @@
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
         android:layout_marginTop="48dp"
+        android:layout_marginEnd="24dp"
         android:hint="@string/login_email_hint"
         android:textColorHint="@color/white"
         app:boxBackgroundColor="@android:color/transparent"
@@ -57,7 +57,9 @@
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
         android:layout_marginTop="18dp"
+        android:layout_marginEnd="24dp"
         android:hint="@string/login_password_hint"
         android:textColorHint="@color/white"
         app:boxBackgroundColor="@android:color/transparent"
@@ -65,7 +67,7 @@
         app:boxStrokeErrorColor="@color/login_error_red"
         app:boxStrokeWidth="1dp"
         app:boxStrokeWidthFocused="2dp"
-        app:endIconContentDescription="@string/login_password_eye_description"
+        app:endIconContentDescription="@string/login_password_eye_show_description"
         app:endIconDrawable="@drawable/ic_visibility_open"
         app:endIconMode="custom"
         app:errorTextColor="@color/login_error_red"
@@ -86,5 +88,51 @@
             android:textColorHint="@color/white"
             android:textCursorDrawable="@null" />
     </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnLogin"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="42dp"
+        android:layout_marginEnd="32dp"
+        android:enabled="false"
+        android:text="@string/login_button"
+        android:textAllCaps="false"
+        android:textColor="@color/login_disabled_text"
+        android:textSize="16sp"
+        app:backgroundTint="@color/login_orange"
+        app:cornerRadius="28dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tilPassword" />
+
+    <TextView
+        android:id="@+id/tvRegister"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_marginTop="44dp"
+        android:clickable="false"
+        android:enabled="false"
+        android:focusable="false"
+        android:gravity="center"
+        android:minWidth="120dp"
+        android:text="@string/register_button"
+        android:textColor="@color/login_register_gray"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnLogin" />
+
+    <ImageView
+        android:id="@+id/imgBottomWaves"
+        android:layout_width="0dp"
+        android:layout_height="105dp"
+        android:contentDescription="@null"
+        android:scaleType="fitXY"
+        android:src="@drawable/bg_login_bottom_waves"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
