@@ -1,6 +1,7 @@
 package com.wt2dadmuvy.spinbot.repository
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.asLiveData
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.wt2dadmuvy.spinbot.database.ChallengeDao
@@ -8,6 +9,8 @@ import com.wt2dadmuvy.spinbot.model.Challenge
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 /**
@@ -20,9 +23,44 @@ class ChallengeRepositoryImpl @Inject constructor(
     private val challengeDao: ChallengeDao
 ) : ChallengeRepository {
 
-    // --- Implementación Local ---
+    // --- Implementación del Origen de la Verdad (Firestore) ---
 
-    override val allChallenges: LiveData<List<Challenge>> = challengeDao.getAllChallenges()
+    /**
+     * Reemplazo de lectura local por remota:
+     * allChallenges ahora observa Firestore en tiempo real.
+     */
+    override val allChallenges: LiveData<List<Challenge>> = callbackFlow {
+        val collection = getChallengesCollection()
+        if (collection == null) {
+            trySend(emptyList<Challenge>())
+        } else {
+            val listener = collection.addSnapshotListener { snapshot, _ ->
+                val challenges = snapshot?.documents?.mapNotNull { doc ->
+                    doc.toObject(Challenge::class.java)?.apply { id = doc.id }
+                } ?: emptyList()
+                trySend(challenges)
+            }
+            awaitClose { listener.remove() }
+        }
+    }.asLiveData()
+
+    /**
+     * Reemplazo de lectura aleatoria local por remota:
+     * Obtiene los retos de Firestore y elige uno al azar.
+     */
+    override suspend fun getRandomChallenge(): Challenge? {
+        val collection = getChallengesCollection() ?: return null
+        return try {
+            val snapshot = collection.get().await()
+            val challenges = snapshot.documents.mapNotNull { it.toObject(Challenge::class.java)?.apply { id = it.id } }
+            if (challenges.isNotEmpty()) challenges.random() else null
+        } catch (e: Exception) {
+            // Si falla la red, usamos Room como backup
+            challengeDao.getRandomChallenge()
+        }
+    }
+
+    // --- Métodos de sincronización dual (Room + Firestore) ---
 
     override suspend fun insertLocal(challenge: Challenge) {
         challengeDao.insertChallenge(challenge)
@@ -35,13 +73,6 @@ class ChallengeRepositoryImpl @Inject constructor(
     override suspend fun deleteLocal(challenge: Challenge) {
         challengeDao.deleteChallenge(challenge)
     }
-
-    override suspend fun getRandomChallenge(): Challenge? {
-        return challengeDao.getRandomChallenge()
-    }
-
-
-    // --- Implementación Remota ---
 
     private fun getChallengesCollection() = auth.currentUser?.uid?.let { uid ->
         firestore.collection("users").document(uid).collection("challenges")
