@@ -26,7 +26,7 @@ import com.wt2dadmuvy.spinbot.utils.Constants
  *              se debe aumentar este número y agregar una Migration.
  *   - exportSchema: false → no guarda el historial del esquema en un archivo JSON.
  */
-@Database(entities = [Challenge::class], version = 1, exportSchema = false)
+@Database(entities = [Challenge::class], version = 2, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
 
     /**
@@ -71,40 +71,40 @@ abstract class AppDatabase : RoomDatabase() {
 
                 // Reto 1 — id más bajo → aparecerá de último en la lista (ORDER BY id DESC)
                 db.execSQL(
-                    "INSERT INTO Challenge (name, description) VALUES " +
-                    "('Reto 1', 'Realiza un RecyclerView que liste una api de Pokemones')"
+                    "INSERT INTO Challenge (id, name, description) VALUES " +
+                    "('1', 'Reto 1', 'Realiza un RecyclerView que liste una api de Pokemones')"
                 )
 
                 // Reto 2
                 db.execSQL(
-                    "INSERT INTO Challenge (name, description) VALUES " +
-                    "('Reto 2', 'Crea un botón que al dar clic muestre una cuenta regresiva de 5 a 0')"
+                    "INSERT INTO Challenge (id, name, description) VALUES " +
+                    "('2', 'Reto 2', 'Crea un botón que al dar clic muestre una cuenta regresiva de 5 a 0')"
                 )
 
                 // Reto 3
                 db.execSQL(
-                    "INSERT INTO Challenge (name, description) VALUES " +
-                    "('Reto 3', 'Crea un botón que al dar clic cambie de color y lance un mensaje emergente que diga \"Hola Mundo\"')"
+                    "INSERT INTO Challenge (id, name, description) VALUES " +
+                    "('3', 'Reto 3', 'Crea un botón que al dar clic cambie de color y lance un mensaje emergente que diga \"Hola Mundo\"')"
                 )
 
                 // Retos adicionales para probar HU 6 Criterio 5 (scroll cuando la lista supera la pantalla)
 
                 // Reto 4
                 db.execSQL(
-                    "INSERT INTO Challenge (name, description) VALUES " +
-                    "('Reto 4', 'Implementa un Fragment con una barra de progreso que se llene automáticamente en 10 segundos')"
+                    "INSERT INTO Challenge (id, name, description) VALUES " +
+                    "('4', 'Reto 4', 'Implementa un Fragment con una barra de progreso que se llene automáticamente en 10 segundos')"
                 )
 
                 // Reto 5
                 db.execSQL(
-                    "INSERT INTO Challenge (name, description) VALUES " +
-                    "('Reto 5', 'Crea una pantalla con un campo de texto y un botón que invierta el texto escrito al dar clic')"
+                    "INSERT INTO Challenge (id, name, description) VALUES " +
+                    "('5', 'Reto 5', 'Crea una pantalla con un campo de texto y un botón que invierta el texto escrito al dar clic')"
                 )
 
                 // Reto 6 — id más alto → aparecerá primero en la lista (ORDER BY id DESC)
                 db.execSQL(
-                    "INSERT INTO Challenge (name, description) VALUES " +
-                    "('Reto 6', 'Diseña un layout con 3 imágenes en forma de cuadrícula y al tocar cualquiera muestra su nombre en un Toast')"
+                    "INSERT INTO Challenge (id, name, description) VALUES " +
+                    "('6', 'Reto 6', 'Diseña un layout con 3 imágenes en forma de cuadrícula y al tocar cualquiera muestra su nombre en un Toast')"
                 )
             }
         }
@@ -126,6 +126,8 @@ abstract class AppDatabase : RoomDatabase() {
                     Constants.NAME_BD  // Nombre del archivo: "app_data.db"
                 )
                 .addCallback(seedCallback)  // Inserta retos iniciales al crear la BD
+                .fallbackToDestructiveMigration() // Evita crash si cambia el esquema (ej: id Int -> String)
+                .fallbackToDestructiveMigrationOnDowngrade()
                 .build()
                 INSTANCE = instance
                 instance

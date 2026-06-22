@@ -40,7 +40,7 @@ class EditChallengeDialogFragment : DialogFragment() {
         super.onCreate(savedInstanceState)
         // Recuperamos el reto pasado como argumento
         arguments?.let {
-            val id = it.getInt(ARG_ID)
+            val id = it.getString(ARG_ID) ?: ""
             val name = it.getString(ARG_NAME) ?: ""
             val description = it.getString(ARG_DESC) ?: ""
             challengeToEdit = Challenge(id, name, description)
@@ -133,7 +133,7 @@ class EditChallengeDialogFragment : DialogFragment() {
         fun newInstance(challenge: Challenge): EditChallengeDialogFragment {
             val fragment = EditChallengeDialogFragment()
             val args = Bundle().apply {
-                putInt(ARG_ID, challenge.id)
+                putString(ARG_ID, challenge.id)
                 putString(ARG_NAME, challenge.name)
                 putString(ARG_DESC, challenge.description)
             }

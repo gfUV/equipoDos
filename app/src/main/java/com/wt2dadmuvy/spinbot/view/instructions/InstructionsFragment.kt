@@ -9,7 +9,9 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.wt2dadmuvy.spinbot.databinding.FragmentInstructionsBinding
 import com.wt2dadmuvy.spinbot.viewmodel.SharedAudioViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class InstructionsFragment : Fragment() {
 
     private var _binding: FragmentInstructionsBinding? = null
