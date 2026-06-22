@@ -40,4 +40,8 @@ class AuthRepositoryImpl @Inject constructor(
             }
         awaitClose { /* No es necesario limpiar listeners de tareas únicas */ }
     }
+
+    override fun logoutUser() {
+        firebaseAuth.signOut()
+    }
 }

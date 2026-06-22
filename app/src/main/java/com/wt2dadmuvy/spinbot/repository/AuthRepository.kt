@@ -19,4 +19,9 @@ interface AuthRepository {
      * @return Un Flow que emite un Result exitoso o fallido.
      */
     fun loginUser(email: String, pass: String): Flow<Result<Unit>>
+
+    /**
+     * Cierra la sesión del usuario actual en Firebase.
+     */
+    fun logoutUser()
 }

@@ -13,7 +13,9 @@ import com.wt2dadmuvy.spinbot.databinding.FragmentChallengesBinding
 import com.wt2dadmuvy.spinbot.model.Challenge
 import com.wt2dadmuvy.spinbot.viewmodel.ChallengesViewModel
 import com.wt2dadmuvy.spinbot.viewmodel.SharedAudioViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class ChallengesFragment : Fragment() {
 
     private var _binding: FragmentChallengesBinding? = null

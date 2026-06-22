@@ -70,6 +70,7 @@
         app:endIconContentDescription="@string/login_password_eye_show_description"
         app:endIconDrawable="@drawable/ic_visibility_open"
         app:endIconMode="custom"
+        app:endIconTint="@color/white"
         app:errorTextColor="@color/login_error_red"
         app:hintTextColor="@color/login_hint_color"
         app:layout_constraintEnd_toEndOf="parent"

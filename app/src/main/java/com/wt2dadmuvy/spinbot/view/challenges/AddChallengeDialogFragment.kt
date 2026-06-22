@@ -16,12 +16,14 @@ import com.wt2dadmuvy.spinbot.R
 import com.wt2dadmuvy.spinbot.databinding.DialogAddChallengeBinding
 import com.wt2dadmuvy.spinbot.model.Challenge
 import com.wt2dadmuvy.spinbot.viewmodel.ChallengesViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
 /**
  * Cuadro de diálogo para agregar un nuevo reto - HU 7.0 (Jonatan).
  *
  * Sigue el patrón MVVM comunicándose con ChallengesViewModel para la persistencia.
  */
+@AndroidEntryPoint
 class AddChallengeDialogFragment : DialogFragment() {
 
     private var _binding: DialogAddChallengeBinding? = null
