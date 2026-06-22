@@ -11,6 +11,7 @@ import androidx.fragment.app.viewModels
 import com.wt2dadmuvy.spinbot.databinding.DialogDeleteChallengeBinding
 import com.wt2dadmuvy.spinbot.model.Challenge
 import com.wt2dadmuvy.spinbot.viewmodel.ChallengesViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
 /**
  * Cuadro de diálogo para ELIMINAR un reto existente - HU 9.0 (German).
@@ -18,6 +19,7 @@ import com.wt2dadmuvy.spinbot.viewmodel.ChallengesViewModel
  * Muestra la descripción del reto y solicita confirmación para eliminarlo
  * de la base de datos local (SQLite).
  */
+@AndroidEntryPoint
 class DeleteChallengeDialogFragment : DialogFragment() {
 
     private var _binding: DialogDeleteChallengeBinding? = null

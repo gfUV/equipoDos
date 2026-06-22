@@ -3,6 +3,13 @@ package com.wt2dadmuvy.spinbot.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.wt2dadmuvy.spinbot.repository.AuthRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /**
  * ViewModel de la HU 2.0 - Ventana Login y Registro.
@@ -17,7 +24,10 @@ import androidx.lifecycle.ViewModel
  * - C11/C12: estado del texto-botón Registrarse según campos llenos.
  * - C15: la vista usa ondas inferiores dibujadas con XML vectorial.
  */
-class LoginViewModel : ViewModel() {
+@HiltViewModel
+class LoginViewModel @Inject constructor(
+    private val authRepository: AuthRepository
+) : ViewModel() {
 
     private val _passwordError = MutableLiveData<String?>(null)
     val passwordError: LiveData<String?> = _passwordError
@@ -27,6 +37,12 @@ class LoginViewModel : ViewModel() {
 
     private val _passwordVisible = MutableLiveData(false)
     val passwordVisible: LiveData<Boolean> = _passwordVisible
+
+    private val _authState = MutableStateFlow<Result<Unit>?>(null)
+    val authState: StateFlow<Result<Unit>?> = _authState
+
+    private val _logoutState = MutableStateFlow(false)
+    val logoutState: StateFlow<Boolean> = _logoutState
 
     private var currentEmail: String = ""
     private var currentPassword: String = ""
@@ -67,6 +83,27 @@ class LoginViewModel : ViewModel() {
      */
     fun togglePasswordVisibility() {
         _passwordVisible.value = !(_passwordVisible.value ?: false)
+    }
+
+    fun loginUser() {
+        viewModelScope.launch {
+            authRepository.loginUser(currentEmail, currentPassword).collect { result ->
+                _authState.value = result
+            }
+        }
+    }
+
+    fun registerUser() {
+        viewModelScope.launch {
+            authRepository.registerUser(currentEmail, currentPassword).collect { result ->
+                _authState.value = result
+            }
+        }
+    }
+
+    fun logoutUser() {
+        authRepository.logoutUser()
+        _logoutState.value = true
     }
 
     companion object {

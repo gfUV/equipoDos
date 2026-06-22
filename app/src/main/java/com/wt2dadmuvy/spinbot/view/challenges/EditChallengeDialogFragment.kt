@@ -16,6 +16,7 @@ import com.wt2dadmuvy.spinbot.R
 import com.wt2dadmuvy.spinbot.databinding.DialogEditChallengeBinding
 import com.wt2dadmuvy.spinbot.model.Challenge
 import com.wt2dadmuvy.spinbot.viewmodel.ChallengesViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
 /**
  * Cuadro de diálogo para EDITAR un reto existente - HU 8.0 (Alexandra).
@@ -23,6 +24,7 @@ import com.wt2dadmuvy.spinbot.viewmodel.ChallengesViewModel
  * Recibe el objeto Challenge a editar, muestra su descripción actual y
  * permite guardarlo tras modificarlo, actualizando la base de datos local.
  */
+@AndroidEntryPoint
 class EditChallengeDialogFragment : DialogFragment() {
 
     private var _binding: DialogEditChallengeBinding? = null

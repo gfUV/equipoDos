@@ -16,19 +16,25 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.wt2dadmuvy.spinbot.R
 import com.wt2dadmuvy.spinbot.databinding.FragmentHomeBinding
 import com.wt2dadmuvy.spinbot.view.challenges.RandomChallengeDialogFragment
 import com.wt2dadmuvy.spinbot.viewmodel.HomeViewModel
+import com.wt2dadmuvy.spinbot.viewmodel.LoginViewModel
 import com.wt2dadmuvy.spinbot.viewmodel.SharedAudioViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
     private val homeViewModel: HomeViewModel by viewModels()
+    private val loginViewModel: LoginViewModel by viewModels()
     private val sharedAudioViewModel: SharedAudioViewModel by activityViewModels()
 
     private var backgroundMusic: MediaPlayer? = null
@@ -84,6 +90,15 @@ class HomeFragment : Fragment() {
     private fun observeViewModel() {
         homeViewModel.countdown.observe(viewLifecycleOwner) { number ->
             binding.tvCountdown.text = number.toString()
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            loginViewModel.logoutState.collect { loggedOut ->
+                if (loggedOut) {
+                    Toast.makeText(requireContext(), R.string.logout_success, Toast.LENGTH_SHORT).show()
+                    findNavController().navigate(R.id.action_homeFragment_to_loginFragment)
+                }
+            }
         }
 
         homeViewModel.estadoJuego.observe(viewLifecycleOwner) { estado ->
@@ -265,6 +280,10 @@ class HomeFragment : Fragment() {
                 putExtra(Intent.EXTRA_TEXT, texto)
             }
             startActivity(Intent.createChooser(shareIntent, "Compartir aplicación vía:"))
+        }
+
+        binding.customToolbar.btnLogout.setOnClickListener {
+            loginViewModel.logoutUser()
         }
     }
 

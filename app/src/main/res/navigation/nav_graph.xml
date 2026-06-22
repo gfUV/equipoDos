@@ -41,6 +41,12 @@
         <action
             android:id="@+id/action_homeFragment_to_challengesFragment"
             app:destination="@id/challengesFragment" />
+
+        <action
+            android:id="@+id/action_homeFragment_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/nav_graph"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <fragment

@@ -9,12 +9,17 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.wt2dadmuvy.spinbot.R
 import com.wt2dadmuvy.spinbot.databinding.FragmentLoginBinding
 import com.wt2dadmuvy.spinbot.viewmodel.LoginViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 /**
  * HU 2.0 - Ventana Login y Registro.
@@ -25,6 +30,7 @@ import com.wt2dadmuvy.spinbot.viewmodel.LoginViewModel
  * No se implementan aún los criterios de autenticación Firebase ni navegación
  * por Login/Registro exitoso, porque corresponden a criterios posteriores.
  */
+@AndroidEntryPoint
 class LoginFragment : Fragment() {
 
     private var _binding: FragmentLoginBinding? = null
@@ -45,8 +51,19 @@ class LoginFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setupInitialState()
         setupTextWatchers()
+        setupClickListeners()
         setupPasswordEye()
         observeViewModel()
+    }
+
+    private fun setupClickListeners() {
+        binding.btnLogin.setOnClickListener {
+            loginViewModel.loginUser()
+        }
+
+        binding.tvRegister.setOnClickListener {
+            loginViewModel.registerUser()
+        }
     }
 
     private fun setupInitialState() {
@@ -93,6 +110,21 @@ class LoginFragment : Fragment() {
 
         loginViewModel.passwordVisible.observe(viewLifecycleOwner) { visible ->
             updatePasswordVisibility(visible)
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            loginViewModel.authState.collect { result ->
+                result?.let {
+                    if (it.isSuccess) {
+                        Toast.makeText(requireContext(), R.string.login_success, Toast.LENGTH_SHORT).show()
+                        findNavController().navigate(R.id.action_loginFragment_to_homeFragment)
+                    } else {
+                        val errorMessage = it.exceptionOrNull()?.message 
+                            ?: getString(R.string.login_error_unknown)
+                        Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
         }
     }
 
