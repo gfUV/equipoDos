@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.wt2dadmuvy.spinbot" />
+                  <option name="mobileSdkAppId" value="1:982311360914:android:33f4f92624cec215ab894b" />
+                  <option name="projectId" value="spinbot-77bcf" />
+                  <option name="projectNumber" value="982311360914" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />
