@@ -31,4 +31,17 @@
     <string name="random_challenge_placeholder">Reto aleatorio</string>
     <string name="pokemon_random_image">Imagen aleatoria de Pokémon</string>
     <string name="close">Cerrar</string>
+
+
+    <!-- HU 2 Miniproyecto II - Login y Registro -->
+    <string name="login_email_hint">Email</string>
+    <string name="login_password_hint">Password</string>
+    <string name="login_password_eye_description">Mostrar contraseña</string>
+    <string name="login_min_password_error">Mínimo 6 dígitos</string>
+
+    <!-- HU 2 Miniproyecto II - Login y Registro - criterios 6, 7, 8, 11, 12 y 15 -->
+    <string name="login_button">Login</string>
+    <string name="register_button">Registrarse</string>
+    <string name="login_password_eye_show_description">Mostrar contraseña</string>
+    <string name="login_password_eye_hide_description">Ocultar contraseña</string>
 </resources>
