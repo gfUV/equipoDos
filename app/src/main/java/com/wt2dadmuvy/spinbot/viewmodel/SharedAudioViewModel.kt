@@ -3,6 +3,8 @@ package com.wt2dadmuvy.spinbot.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
 /**
  * ViewModel compartido entre HomeFragment, ChallengesFragment (HU 6) e InstructionsFragment (HU 5).
@@ -13,7 +15,8 @@ import androidx.lifecycle.ViewModel
  *
  * Se accede con: private val sharedAudioViewModel: SharedAudioViewModel by activityViewModels()
  */
-class SharedAudioViewModel : ViewModel() {
+@HiltViewModel
+class SharedAudioViewModel @Inject constructor() : ViewModel() {
 
     // Estado real del audio: true = encendido, false = apagado por el usuario
     private val _isAudioOn = MutableLiveData(true)

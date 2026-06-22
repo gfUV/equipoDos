@@ -12,9 +12,11 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.wt2dadmuvy.spinbot.R
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class SplashFragment : Fragment() {
 
     override fun onCreateView(
@@ -45,7 +47,16 @@ class SplashFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             delay(SPLASH_TIME_MILLISECONDS)
             if (isAdded) {
-                findNavController().navigate(R.id.action_splashFragment_to_loginFragment)
+                // Verificamos si hay un usuario autenticado en Firebase
+                val currentUser = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser
+                
+                if (currentUser != null) {
+                    // Si el usuario ya está logueado, vamos directo al Home
+                    findNavController().navigate(R.id.action_splashFragment_to_homeFragment)
+                } else {
+                    // Si no hay sesión activa, vamos al Login
+                    findNavController().navigate(R.id.action_splashFragment_to_loginFragment)
+                }
             }
         }
     }

@@ -1,72 +1,38 @@
 package com.wt2dadmuvy.spinbot.repository
 
 import androidx.lifecycle.LiveData
-import com.wt2dadmuvy.spinbot.database.ChallengeDao
 import com.wt2dadmuvy.spinbot.model.Challenge
+import kotlinx.coroutines.flow.Flow
 
 /**
- * Repositorio de retos — capa intermedia entre el ViewModel y el DAO.
- *
- * ¿Para qué sirve el Repository en MVVM?
- * El ViewModel no debe hablar directamente con la base de datos.
- * El Repository actúa como intermediario: el ViewModel le pide datos al Repository,
- * y el Repository decide de dónde obtenerlos (base de datos local, internet, etc.).
- * Esto hace el código más organizado, fácil de mantener y testeable.
- *
- * Flujo de datos en esta app:
- *   ChallengesFragment → ChallengesViewModel → ChallengeRepository → ChallengeDao → SQLite
- *
- * @param challengeDao El DAO inyectado desde AppDatabase para acceder a la tabla Challenge.
+ * Interfaz unificada para el repositorio de retos.
+ * Define operaciones tanto para la persistencia local (Room) como para la remota (Firestore).
  */
-class ChallengeRepository(private val challengeDao: ChallengeDao) {
+interface ChallengeRepository {
+
+    // --- Operaciones Locales (Room) ---
+
+    val allChallenges: LiveData<List<Challenge>>
+
+    suspend fun insertLocal(challenge: Challenge)
+
+    suspend fun updateLocal(challenge: Challenge)
+
+    suspend fun deleteLocal(challenge: Challenge)
+
+    suspend fun getRandomChallenge(): Challenge?
+
+
+    // --- Operaciones Remotas (Firestore) ---
+
+    fun getRemoteChallenges(): Flow<Result<List<Challenge>>>
 
     /**
-     * Lista de todos los retos como LiveData.
-     * Al ser LiveData, la pantalla se actualiza automáticamente cada vez que
-     * se agrega, edita o elimina un reto — sin necesidad de recargar manualmente.
-     * Los retos vienen ordenados del más reciente al más antiguo (ORDER BY id DESC).
+     * Agrega un reto a Firestore y retorna el objeto con el ID generado por Firestore.
      */
-    val allChallenges: LiveData<List<Challenge>> = challengeDao.getAllChallenges()
+    fun addRemoteChallenge(challenge: Challenge): Flow<Result<Challenge>>
 
-    /**
-     * Inserta un nuevo reto en la base de datos.
-     * Al usar "suspend" en el DAO, Room maneja automáticamente la ejecución en un hilo de fondo.
-     * Lo llama ChallengesViewModel.insert() desde viewModelScope.
-     *
-     * @param challenge El objeto Challenge con el nombre y descripción del nuevo reto.
-     */
-    suspend fun insert(challenge: Challenge) {
-        challengeDao.insertChallenge(challenge)
-    }
+    fun updateRemoteChallenge(challenge: Challenge): Flow<Result<Unit>>
 
-    /**
-     * Actualiza un reto existente en la base de datos.
-     * Room identifica el reto por su "id" y maneja el hilo de fondo.
-     * Lo usará el dialog de editar (HU 8 - Alexandra).
-     *
-     * @param challenge El objeto Challenge con los datos ya modificados.
-     */
-    suspend fun update(challenge: Challenge) {
-        challengeDao.updateChallenge(challenge)
-    }
-
-    /**
-     * Elimina un reto de la base de datos.
-     * Room identifica el reto por su "id" y maneja el hilo de fondo.
-     * Lo usará el dialog de eliminar (HU 9 - German).
-     *
-     * @param challenge El objeto Challenge que se desea eliminar.
-     */
-    suspend fun delete(challenge: Challenge) {
-        challengeDao.deleteChallenge(challenge)
-    }
-
-
-    /**
-     * Retorna un reto aleatorio desde Room para mostrarlo en HU 12.
-     */
-    suspend fun getRandomChallenge(): Challenge? {
-        return challengeDao.getRandomChallenge()
-    }
-
+    fun deleteRemoteChallenge(challenge: Challenge): Flow<Result<Unit>>
 }

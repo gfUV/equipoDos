@@ -35,7 +35,7 @@ class DeleteChallengeDialogFragment : DialogFragment() {
         super.onCreate(savedInstanceState)
         // Recuperamos el reto pasado como argumento
         arguments?.let {
-            val id = it.getInt(ARG_ID)
+            val id = it.getString(ARG_ID) ?: ""
             val name = it.getString(ARG_NAME) ?: ""
             val description = it.getString(ARG_DESC) ?: ""
             challengeToDelete = Challenge(id, name, description)
@@ -100,7 +100,7 @@ class DeleteChallengeDialogFragment : DialogFragment() {
         fun newInstance(challenge: Challenge): DeleteChallengeDialogFragment {
             val fragment = DeleteChallengeDialogFragment()
             val args = Bundle().apply {
-                putInt(ARG_ID, challenge.id)
+                putString(ARG_ID, challenge.id)
                 putString(ARG_NAME, challenge.name)
                 putString(ARG_DESC, challenge.description)
             }
