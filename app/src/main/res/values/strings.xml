@@ -46,6 +46,8 @@
     <string name="login_password_eye_hide_description">Ocultar contraseña</string>
     <string name="login_success">Bienvenido</string>
     <string name="login_error_unknown">Error desconocido</string>
+    <string name="login_error_incorrect">Login incorrecto</string>
+    <string name="login_error_email_exists">Errr en el registro</string>
     <string name="logout_description">Cerrar sesión</string>
     <string name="logout_success">Sesión cerrada</string>
 </resources>

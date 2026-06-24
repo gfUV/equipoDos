@@ -119,8 +119,17 @@ class LoginFragment : Fragment() {
                         Toast.makeText(requireContext(), R.string.login_success, Toast.LENGTH_SHORT).show()
                         findNavController().navigate(R.id.action_loginFragment_to_homeFragment)
                     } else {
-                        val errorMessage = it.exceptionOrNull()?.message 
-                            ?: getString(R.string.login_error_unknown)
+                        val exception = it.exceptionOrNull()
+                        val errorMessage = when {
+                            exception is com.google.firebase.auth.FirebaseAuthInvalidUserException || 
+                            exception is com.google.firebase.auth.FirebaseAuthInvalidCredentialsException -> 
+                                getString(R.string.login_error_incorrect)
+                            
+                            exception?.message?.contains("email-already-in-use", ignoreCase = true) == true ->
+                                getString(R.string.login_error_email_exists)
+                                
+                            else -> exception?.message ?: getString(R.string.login_error_unknown)
+                        }
                         Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
                     }
                 }
