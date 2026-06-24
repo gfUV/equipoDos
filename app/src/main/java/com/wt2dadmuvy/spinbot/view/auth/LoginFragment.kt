@@ -120,12 +120,12 @@ class LoginFragment : Fragment() {
                         findNavController().navigate(R.id.action_loginFragment_to_homeFragment)
                     } else {
                         val exception = it.exceptionOrNull()
-                        val errorMessage = when {
-                            exception is com.google.firebase.auth.FirebaseAuthInvalidUserException || 
-                            exception is com.google.firebase.auth.FirebaseAuthInvalidCredentialsException -> 
+                        val errorMessage = when (exception) {
+                            is com.google.firebase.auth.FirebaseAuthInvalidUserException,
+                            is com.google.firebase.auth.FirebaseAuthInvalidCredentialsException -> 
                                 getString(R.string.login_error_incorrect)
                             
-                            exception?.message?.contains("email-already-in-use", ignoreCase = true) == true ->
+                            is com.google.firebase.auth.FirebaseAuthUserCollisionException ->
                                 getString(R.string.login_error_email_exists)
                                 
                             else -> exception?.message ?: getString(R.string.login_error_unknown)
